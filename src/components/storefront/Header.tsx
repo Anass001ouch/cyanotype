@@ -46,7 +46,7 @@ export default function Header({ promoText, onAdminClick }: HeaderProps) {
             {/* Left - Brand */}
             <div className="flex-shrink-0">
               <h1 className="text-xl sm:text-2xl font-bold tracking-[0.25em] text-[#1a2b4c]">
-                CYANOTYPE
+                CYNA
               </h1>
             </div>
 

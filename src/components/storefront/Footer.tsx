@@ -85,7 +85,7 @@ export default function Footer({ onAdminClick }: FooterProps) {
             <span>PAYPAL</span>
           </div>
           <p className="text-white/40 text-xs">
-            &copy; {new Date().getFullYear()} Cyanotype. All rights reserved.
+            &copy; {new Date().getFullYear()} CYNA. All rights reserved.
           </p>
           {/* Discreet Admin Access */}
           <button

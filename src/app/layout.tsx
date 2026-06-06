@@ -14,14 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CYANOTYPE — Handcrafted Cyanotype Fashion",
+  title: "CYNA — Handcrafted Cyanotype Fashion",
   description: "Where chemistry meets fashion. Discover handcrafted cyanotype clothing, accessories, and wearable art. Each piece is unique, created using UV-sensitive chemical processes.",
-  keywords: ["Cyanotype", "Handcrafted Fashion", "Chemical Printing", "Sustainable Fashion", "Artisanal Clothing", "Morocco"],
+  keywords: ["CYNA", "Cyanotype", "Handcrafted Fashion", "Chemical Printing", "Sustainable Fashion", "Artisanal Clothing", "Morocco"],
   icons: {
     icon: "/logo.svg",
   },
   openGraph: {
-    title: "CYANOTYPE — Handcrafted Cyanotype Fashion",
+    title: "CYNA — Handcrafted Cyanotype Fashion",
     description: "Where chemistry meets fashion. Discover handcrafted cyanotype clothing and wearable art.",
     type: "website",
   },
