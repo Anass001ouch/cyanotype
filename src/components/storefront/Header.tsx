@@ -45,9 +45,13 @@ export default function Header({ promoText, onAdminClick }: HeaderProps) {
           <div className="flex items-center justify-between h-16">
             {/* Left - Brand */}
             <div className="flex-shrink-0">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-[0.25em] text-[#1a2b4c]">
-                CYNA
-              </h1>
+              <a href="/" className="flex items-center">
+                <img
+                  src="/cyna-logo.png"
+                  alt="CYNA"
+                  className="h-10 sm:h-12 w-auto object-contain"
+                />
+              </a>
             </div>
 
             {/* Center - Navigation (desktop) */}

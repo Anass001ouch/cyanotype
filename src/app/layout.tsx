@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "Where chemistry meets fashion. Discover handcrafted cyanotype clothing, accessories, and wearable art. Each piece is unique, created using UV-sensitive chemical processes.",
   keywords: ["CYNA", "Cyanotype", "Handcrafted Fashion", "Chemical Printing", "Sustainable Fashion", "Artisanal Clothing", "Morocco"],
   icons: {
-    icon: "/logo.svg",
+    icon: "/cyna-logo.png",
   },
   openGraph: {
     title: "CYNA — Handcrafted Cyanotype Fashion",
