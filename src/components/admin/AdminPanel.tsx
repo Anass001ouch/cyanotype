@@ -2,8 +2,18 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, Palette } from 'lucide-react';
+import { ArrowLeft, Package, Palette, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+
+const ADMIN_PASSWORD_HASH = '66d5d469c8a15199236964177d27ca364bbe8f4ca431da6cbd1b144eb80d8004';
+
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 import InventoryForm from './InventoryForm';
 import InventoryTable from './InventoryTable';
 import DesignForm from './DesignForm';
@@ -32,6 +42,11 @@ interface AdminPanelProps {
 }
 
 export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [activeTab, setActiveTab] = useState<'inventory' | 'design'>('inventory');
   const [products, setProducts] = useState<Product[]>([]);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -39,6 +54,30 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  // Check session storage for existing auth
+  useEffect(() => {
+    const auth = sessionStorage.getItem('cyna-admin-auth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setPasswordError(false);
+
+    const hash = await hashPassword(passwordInput);
+    if (hash === ADMIN_PASSWORD_HASH) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('cyna-admin-auth', 'true');
+      setPasswordInput('');
+    } else {
+      setPasswordError(true);
+    }
+    setIsLoggingIn(false);
+  };
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -64,6 +103,66 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
     fetchProducts();
     fetchSettings();
   }, [fetchProducts, fetchSettings]);
+
+  // Login screen — shown after all hooks
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#faf9f6] flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          <div className="bg-white rounded-xl border border-[#e5e5e5] shadow-sm p-8">
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-14 h-14 bg-[#1a2b4c] rounded-full flex items-center justify-center mb-4">
+                <Lock className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-[#1a2b4c]">Admin Access</h2>
+              <p className="text-sm text-[#6b7280] mt-1">Enter password to continue</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={passwordInput}
+                  onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
+                  placeholder="Password"
+                  className={`w-full px-4 py-3 border rounded-lg text-sm text-[#1a2b4c] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#1a2b4c]/20 focus:border-[#1a2b4c] transition-colors ${
+                    passwordError ? 'border-red-400 bg-red-50' : 'border-[#e5e5e5]'
+                  }`}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#1a2b4c] transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+
+              {passwordError && (
+                <p className="text-red-500 text-xs font-medium">Incorrect password. Try again.</p>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full bg-[#1a2b4c] hover:bg-[#2d5a7b] text-white py-3"
+                disabled={!passwordInput || isLoggingIn}
+              >
+                {isLoggingIn ? 'Verifying...' : 'Unlock'}
+              </Button>
+            </form>
+          </div>
+
+          <button
+            onClick={onBackToStore}
+            className="w-full text-center text-sm text-[#6b7280] hover:text-[#1a2b4c] mt-4 transition-colors"
+          >
+            ← Back to store
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleProductSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
