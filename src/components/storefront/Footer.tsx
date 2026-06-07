@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Send } from 'lucide-react';
+import React, { useState } from 'react';
+import { Send, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface FooterProps {
   onAdminClick: () => void;
@@ -10,6 +11,40 @@ interface FooterProps {
 }
 
 export default function Footer({ onAdminClick, onNavigate, onCategorySelect }: FooterProps) {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) throw new Error('Failed to subscribe');
+
+      setEmail('');
+      toast({
+        title: 'Subscribed Successfully!',
+        description: 'You will be the first to know about new drops.',
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: 'Subscription Failed',
+        description: 'There was an error saving your email. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer className="bg-card text-card-foreground border-t border-border">
       {/* Newsletter */}
@@ -23,19 +58,23 @@ export default function Footer({ onAdminClick, onNavigate, onCategorySelect }: F
           </p>
           <form
             className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSubscribe}
           >
             <input
               type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full sm:flex-1 px-4 py-3 bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-primary transition-colors"
             />
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0"
+              disabled={isSubmitting}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-md text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0 disabled:opacity-70"
             >
-              <Send className="w-4 h-4" />
-              Subscribe
+              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              {isSubmitting ? 'Subscribing...' : 'Subscribe'}
             </button>
           </form>
         </div>
