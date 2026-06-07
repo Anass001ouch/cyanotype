@@ -34,8 +34,14 @@ export default function Hero({ imageUrl, eyebrow = "HANDMADE IN MOROCCO", headli
 
       {/* Layer 2: Subtle gradient overlays to ensure text readability */}
       {/* 60% dark overlay on the left to support text, fading to transparent on the right */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#061224] via-[#061224]/80 to-transparent w-full md:w-[70%]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#061224]/90 via-[#061224]/70 to-transparent w-full md:w-[70%]" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+      
+      {/* Radial gradient exactly behind the text for a distinct focal point */}
+      <div 
+        className="absolute inset-0 z-[1]" 
+        style={{ background: 'radial-gradient(circle at 30% 50%, rgba(0,0,0,0.4), transparent 60%)' }} 
+      />
 
       {/* Layer 3: Tiny drifting particles (Subtle Motion) */}
       {mounted && (
@@ -83,13 +89,13 @@ export default function Hero({ imageUrl, eyebrow = "HANDMADE IN MOROCCO", headli
           </motion.p>
 
           {/* Headline */}
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-white tracking-tight leading-[1.1] mb-6">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-white tracking-tight leading-[1.1] mb-6 relative z-10 drop-shadow-sm">
             {headline}
           </h2>
 
           {/* Description */}
-          <p className="text-lg sm:text-xl text-white/80 font-light leading-relaxed max-w-lg mb-10">
-            {description || "Every cyanotype piece is exposed by sunlight, making each print completely unique."}
+          <p className="text-lg sm:text-xl text-white/80 font-light leading-relaxed max-w-lg mb-10 relative z-10">
+            {description || "Each CYNA piece is created through the cyanotype process, where sunlight, chemistry, and craftsmanship combine to produce wearable works of art."}
           </p>
 
           {/* CTAs */}
