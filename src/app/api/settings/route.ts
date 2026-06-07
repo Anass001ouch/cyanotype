@@ -8,8 +8,14 @@ export async function GET() {
     if (!settings) {
       settings = await db.siteSettings.create({
         data: {
-          heroHeadline: 'Handcrafted Cyanotype Fashion',
+          heroImageUrl: '',
+          heroEyebrow: 'HANDMADE IN MOROCCO',
+          heroHeadline: 'Where Sunlight Becomes Art',
+          heroDescription: 'Every cyanotype piece is exposed by sunlight, making each print completely unique.',
           promoBannerText: 'FREE SHIPPING ON ORDERS OVER 500 DH',
+          whatsappNumber: '212600000000',
+          storeMode: 'LIVE',
+          comingSoonImageUrl: '',
         },
       });
     }
@@ -28,12 +34,22 @@ export async function PUT(request: NextRequest) {
     const promoBannerText = formData.get('promoBannerText') as string | null;
     const heroHeadline = formData.get('heroHeadline') as string | null;
     const heroImageUrl = formData.get('heroImageUrl') as string | null;
+    const heroEyebrow = formData.get('heroEyebrow') as string | null;
+    const heroDescription = formData.get('heroDescription') as string | null;
+    const whatsappNumber = formData.get('whatsappNumber') as string | null;
+    const storeMode = formData.get('storeMode') as string | null;
+    const comingSoonImageUrl = formData.get('comingSoonImageUrl') as string | null;
 
     const updateData: Record<string, string> = {};
 
     if (promoBannerText !== null) updateData.promoBannerText = promoBannerText;
     if (heroHeadline !== null) updateData.heroHeadline = heroHeadline;
+    if (heroEyebrow !== null) updateData.heroEyebrow = heroEyebrow;
+    if (heroDescription !== null) updateData.heroDescription = heroDescription;
     if (heroImageUrl !== null) updateData.heroImageUrl = heroImageUrl;
+    if (whatsappNumber !== null) updateData.whatsappNumber = whatsappNumber;
+    if (storeMode !== null) updateData.storeMode = storeMode;
+    if (comingSoonImageUrl !== null) updateData.comingSoonImageUrl = comingSoonImageUrl;
 
     let settings = await db.siteSettings.findFirst();
 

@@ -22,8 +22,31 @@ model Product {
 
 model SiteSettings {
   id              String   @id @default(cuid())
-  heroImageUrl    String   @default("")
-  heroHeadline    String   @default("Handcrafted Cyanotype Fashion")
-  promoBannerText String   @default("FREE SHIPPING ON ORDERS OVER 500 DH")
+  heroImageUrl       String   @default("")
+  heroEyebrow        String   @default("HANDMADE IN MOROCCO")
+  heroHeadline       String   @default("Where Sunlight Becomes Art")
+  heroDescription    String   @default("Every cyanotype piece is exposed by sunlight, making each print completely unique.")
+  promoBannerText    String   @default("FREE SHIPPING ON ORDERS OVER 500 DH")
+  whatsappNumber     String   @default("212600000000")
+  storeMode          String   @default("LIVE") // "LIVE" or "COMING_SOON"
+  comingSoonImageUrl String   @default("")
   updatedAt       DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  productId       String
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  customerCity    String
+  status          String   @default("Pending") // Pending, Confirmed, Shipped, Delivered, Cancelled
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
 }

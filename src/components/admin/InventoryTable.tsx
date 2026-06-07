@@ -33,10 +33,10 @@ interface InventoryTableProps {
 
 export default function InventoryTable({ products, onEdit, onDelete, isDeleting }: InventoryTableProps) {
   return (
-    <div className="border border-[#e5e5e5] rounded-lg overflow-hidden">
+    <div className="border border-border rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#f8f9fa]">
+          <TableRow className="bg-muted/50">
             <TableHead className="w-[70px]">Image</TableHead>
             <TableHead>Title</TableHead>
             <TableHead className="hidden sm:table-cell">Price</TableHead>
@@ -49,7 +49,7 @@ export default function InventoryTable({ products, onEdit, onDelete, isDeleting 
         <TableBody>
           {products.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-[#6b7280]">
+              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                 No products yet. Add your first product above.
               </TableCell>
             </TableRow>
@@ -64,21 +64,21 @@ export default function InventoryTable({ products, onEdit, onDelete, isDeleting 
                       className="w-12 h-12 object-cover rounded"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-[#f0efec] rounded flex items-center justify-center text-[10px] text-[#6b7280]">
+                    <div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-[10px] text-muted-foreground">
                       N/A
                     </div>
                   )}
                 </TableCell>
-                <TableCell className="font-medium text-[#1a2b4c] max-w-[200px] truncate">
+                <TableCell className="font-medium text-foreground max-w-[200px] truncate">
                   {product.title}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell font-medium">
                   {Math.round(product.price)} DH
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-[#6b7280]">
+                <TableCell className="hidden md:table-cell text-muted-foreground">
                   {product.category}
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-[#6b7280]">
+                <TableCell className="hidden md:table-cell text-muted-foreground">
                   {product.technique}
                 </TableCell>
                 <TableCell>
@@ -99,7 +99,7 @@ export default function InventoryTable({ products, onEdit, onDelete, isDeleting 
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(product)}
-                      className="h-8 w-8 text-[#2d5a7b] hover:text-[#1a2b4c]"
+                      className="h-8 w-8 text-primary hover:text-primary/90"
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>

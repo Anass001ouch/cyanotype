@@ -178,7 +178,7 @@ export default function InventoryForm({ product, onSubmit, onCancel, isSubmittin
               onCheckedChange={setInStock}
               id="stock-switch"
             />
-            <span className="text-sm text-[#1a2b4c]">
+            <span className="text-sm text-foreground">
               {inStock ? 'In Stock' : 'Sold Out'}
             </span>
           </div>
@@ -188,7 +188,7 @@ export default function InventoryForm({ product, onSubmit, onCancel, isSubmittin
         <div className="space-y-2 sm:col-span-2">
           <Label>Product Image</Label>
           <div
-            className="border-2 border-dashed border-[#e5e5e5] rounded-lg p-4 text-center hover:border-[#2d5a7b] transition-colors cursor-pointer"
+            className="border-2 border-dashed border-border rounded-lg p-4 text-center hover:border-primary transition-colors cursor-pointer"
             onClick={() => fileInputRef.current?.click()}
           >
             {imagePreview ? (
@@ -199,15 +199,15 @@ export default function InventoryForm({ product, onSubmit, onCancel, isSubmittin
                   className="w-20 h-20 object-cover rounded-md"
                 />
                 <div className="text-left">
-                  <p className="text-sm text-[#1a2b4c] font-medium">Click to change image</p>
-                  <p className="text-xs text-[#6b7280]">JPG, PNG, WebP supported</p>
+                  <p className="text-sm text-foreground font-medium">Click to change image</p>
+                  <p className="text-xs text-muted-foreground">JPG, PNG, WebP supported</p>
                 </div>
               </div>
             ) : (
               <div className="py-4">
-                <ImagePlus className="w-8 h-8 mx-auto text-[#6b7280] mb-2" />
-                <p className="text-sm text-[#6b7280]">Click to upload an image</p>
-                <p className="text-xs text-[#6b7280] mt-1">JPG, PNG, WebP supported</p>
+                <ImagePlus className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                <p className="text-sm text-muted-foreground">Click to upload an image</p>
+                <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WebP supported</p>
               </div>
             )}
             <input
@@ -226,7 +226,7 @@ export default function InventoryForm({ product, onSubmit, onCancel, isSubmittin
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="bg-[#1a2b4c] hover:bg-[#2d5a7b] text-white"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
           {isEditing ? 'Update Product' : 'Add Product'}

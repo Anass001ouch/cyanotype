@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, Palette, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Package, Palette, Lock, Eye, EyeOff, ShoppingCart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-const ADMIN_PASSWORD_HASH = '66d5d469c8a15199236964177d27ca364bbe8f4ca431da6cbd1b144eb80d8004';
+const ADMIN_PASSWORD_HASH = '6586bfcf940a660fdc9e2d6b01cbf028bf2714183f6c543c0006b02290d87b31'; // "anas@ouch.com2005"
 
 async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -17,6 +17,7 @@ async function hashPassword(password: string): Promise<string> {
 import InventoryForm from './InventoryForm';
 import InventoryTable from './InventoryTable';
 import DesignForm from './DesignForm';
+import OrdersTable from './OrdersTable';
 
 interface Product {
   id: string;
@@ -33,7 +34,12 @@ interface SiteSettings {
   id: string;
   heroImageUrl: string;
   heroHeadline: string;
+  heroEyebrow: string;
+  heroDescription: string;
   promoBannerText: string;
+  whatsappNumber: string;
+  storeMode: string;
+  comingSoonImageUrl: string;
 }
 
 interface AdminPanelProps {
@@ -47,7 +53,7 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [activeTab, setActiveTab] = useState<'inventory' | 'design'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'design' | 'orders'>('orders');
   const [products, setProducts] = useState<Product[]>([]);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -107,15 +113,15 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
   // Login screen — shown after all hooks
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#faf9f6] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <div className="bg-white rounded-xl border border-[#e5e5e5] shadow-sm p-8">
+          <div className="bg-card rounded-xl border border-border shadow-sm p-8">
             <div className="flex flex-col items-center mb-8">
-              <div className="w-14 h-14 bg-[#1a2b4c] rounded-full flex items-center justify-center mb-4">
-                <Lock className="w-6 h-6 text-white" />
+              <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center mb-4">
+                <Lock className="w-6 h-6 text-primary-foreground" />
               </div>
-              <h2 className="text-xl font-bold text-[#1a2b4c]">Admin Access</h2>
-              <p className="text-sm text-[#6b7280] mt-1">Enter password to continue</p>
+              <h2 className="text-xl font-bold text-foreground">Admin Access</h2>
+              <p className="text-sm text-muted-foreground mt-1">Enter password to continue</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
@@ -125,27 +131,27 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
                   value={passwordInput}
                   onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
                   placeholder="Password"
-                  className={`w-full px-4 py-3 border rounded-lg text-sm text-[#1a2b4c] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2 focus:ring-[#1a2b4c]/20 focus:border-[#1a2b4c] transition-colors ${
-                    passwordError ? 'border-red-400 bg-red-50' : 'border-[#e5e5e5]'
+                  className={`w-full px-4 py-3 border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors bg-background ${
+                    passwordError ? 'border-destructive bg-destructive/10' : 'border-border'
                   }`}
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#1a2b4c] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
 
               {passwordError && (
-                <p className="text-red-500 text-xs font-medium">Incorrect password. Try again.</p>
+                <p className="text-destructive text-xs font-medium">Incorrect password. Try again.</p>
               )}
 
               <Button
                 type="submit"
-                className="w-full bg-[#1a2b4c] hover:bg-[#2d5a7b] text-white py-3"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3"
                 disabled={!passwordInput || isLoggingIn}
               >
                 {isLoggingIn ? 'Verifying...' : 'Unlock'}
@@ -155,7 +161,7 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
 
           <button
             onClick={onBackToStore}
-            className="w-full text-center text-sm text-[#6b7280] hover:text-[#1a2b4c] mt-4 transition-colors"
+            className="w-full text-center text-sm text-muted-foreground hover:text-foreground mt-4 transition-colors"
           >
             ← Back to store
           </button>
@@ -260,21 +266,32 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex">
+    <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <aside className="w-56 bg-white border-r border-[#e5e5e5] flex flex-col shrink-0 hidden sm:flex">
-        <div className="p-5 border-b border-[#e5e5e5]">
-          <h2 className="text-lg font-bold text-[#1a2b4c] tracking-wide">Admin</h2>
-          <p className="text-xs text-[#6b7280] mt-0.5">Dashboard</p>
+      <aside className="w-56 bg-card border-r border-border flex flex-col shrink-0 hidden sm:flex">
+        <div className="p-5 border-b border-border">
+          <h2 className="text-lg font-bold text-foreground tracking-wide">Admin</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Dashboard</p>
         </div>
 
         <nav className="flex-1 p-3 space-y-1">
           <button
+            onClick={() => setActiveTab('orders')}
+            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'orders'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground hover:bg-muted'
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Manage Orders
+          </button>
+          <button
             onClick={() => setActiveTab('inventory')}
             className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'inventory'
-                ? 'bg-[#1a2b4c] text-white'
-                : 'text-[#1a2b4c] hover:bg-[#f0efec]'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground hover:bg-muted'
             }`}
           >
             <Package className="w-4 h-4" />
@@ -284,8 +301,8 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
             onClick={() => setActiveTab('design')}
             className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'design'
-                ? 'bg-[#1a2b4c] text-white'
-                : 'text-[#1a2b4c] hover:bg-[#f0efec]'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground hover:bg-muted'
             }`}
           >
             <Palette className="w-4 h-4" />
@@ -293,7 +310,7 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
           </button>
         </nav>
 
-        <div className="p-3 border-t border-[#e5e5e5]">
+        <div className="p-3 border-t border-border">
           <Button
             variant="outline"
             className="w-full justify-start gap-2"
@@ -306,9 +323,9 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
       </aside>
 
       {/* Mobile header */}
-      <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-[#e5e5e5] px-4 py-3 flex items-center justify-between">
+      <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
         <div>
-          <h2 className="text-base font-bold text-[#1a2b4c]">Admin</h2>
+          <h2 className="text-base font-bold text-foreground">Admin</h2>
         </div>
         <Button variant="outline" size="sm" onClick={onBackToStore} className="gap-1">
           <ArrowLeft className="w-3 h-3" />
@@ -317,40 +334,60 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
       </div>
 
       {/* Mobile tab bar */}
-      <div className="sm:hidden fixed top-[49px] left-0 right-0 z-40 bg-white border-b border-[#e5e5e5] flex">
+      <div className="sm:hidden fixed top-[49px] left-0 right-0 z-40 bg-card border-b border-border flex">
         <button
-          onClick={() => setActiveTab('inventory')}
-          className={`flex-1 py-3 text-center text-xs font-medium transition-colors ${
-            activeTab === 'inventory'
-              ? 'text-[#1a2b4c] border-b-2 border-[#1a2b4c]'
-              : 'text-[#6b7280]'
-          }`}
-        >
-          <Package className="w-4 h-4 mx-auto mb-1" />
-          Inventory
-        </button>
+            onClick={() => setActiveTab('orders')}
+            className={`flex-1 py-3 text-center text-xs font-medium transition-colors ${
+              activeTab === 'orders'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-muted-foreground'
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4 mx-auto mb-1" />
+            Orders
+          </button>
         <button
-          onClick={() => setActiveTab('design')}
-          className={`flex-1 py-3 text-center text-xs font-medium transition-colors ${
-            activeTab === 'design'
-              ? 'text-[#1a2b4c] border-b-2 border-[#1a2b4c]'
-              : 'text-[#6b7280]'
-          }`}
-        >
-          <Palette className="w-4 h-4 mx-auto mb-1" />
-          Design
-        </button>
+            onClick={() => setActiveTab('inventory')}
+            className={`flex-1 py-3 text-center text-xs font-medium transition-colors ${
+              activeTab === 'inventory'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-muted-foreground'
+            }`}
+          >
+            <Package className="w-4 h-4 mx-auto mb-1" />
+            Inventory
+          </button>
+          <button
+            onClick={() => setActiveTab('design')}
+            className={`flex-1 py-3 text-center text-xs font-medium transition-colors ${
+              activeTab === 'design'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-muted-foreground'
+            }`}
+          >
+            <Palette className="w-4 h-4 mx-auto mb-1" />
+            Design
+          </button>
       </div>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <div className="sm:hidden h-[104px]" /> {/* Spacer for mobile fixed headers */}
-        <div className="max-w-5xl mx-auto p-4 sm:p-8">
+        <div className="max-w-5xl mx-auto p-4 sm:p-8 space-y-6">
+          {activeTab === 'orders' && (
+            <div className="bg-card rounded-lg border border-border p-5 sm:p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground mb-5">
+                Manage Orders
+              </h3>
+              <OrdersTable />
+            </div>
+          )}
+
           {activeTab === 'inventory' && (
             <div className="space-y-8">
               {/* Product Form */}
-              <div className="bg-white rounded-lg border border-[#e5e5e5] p-5 sm:p-6">
-                <h3 className="text-lg font-semibold text-[#1a2b4c] mb-5">
+              <div className="bg-card rounded-lg border border-border p-5 sm:p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-5">
                   {editingProduct ? 'Edit Product' : 'Add New Product'}
                 </h3>
                 <InventoryForm
@@ -362,8 +399,8 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
               </div>
 
               {/* Products Table */}
-              <div className="bg-white rounded-lg border border-[#e5e5e5] p-5 sm:p-6">
-                <h3 className="text-lg font-semibold text-[#1a2b4c] mb-5">
+              <div className="bg-card rounded-lg border border-border p-5 sm:p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-5">
                   Inventory ({products.length})
                 </h3>
                 <InventoryTable
@@ -377,8 +414,8 @@ export default function AdminPanel({ onBackToStore, onDataChange }: AdminPanelPr
           )}
 
           {activeTab === 'design' && (
-            <div className="bg-white rounded-lg border border-[#e5e5e5] p-5 sm:p-6">
-              <h3 className="text-lg font-semibold text-[#1a2b4c] mb-6">
+            <div className="bg-card rounded-lg border border-border p-5 sm:p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-foreground mb-6">
                 Website Design Settings
               </h3>
               <DesignForm
